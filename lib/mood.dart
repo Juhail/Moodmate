@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flutter_svg/svg.dart';
 import 'package:moodmate/Home.dart';
+import 'package:moodmate/MIS.dart';
 
 class corousal extends StatefulWidget {
   @override
@@ -62,13 +63,13 @@ class _corousalState extends State<corousal> {
           ),
           Column(
             children: [
-              Text(
-                mood[activePage],
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
+              // Text(
+              //   mood[activePage],
+              //   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              // ),
               Container(
-                width: double.infinity,
-                height: 500,
+                width: MediaQuery.of(context).size.width,
+                height: 400,
                 decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(30)),
@@ -83,6 +84,12 @@ class _corousalState extends State<corousal> {
                     itemBuilder: (context, index) {
                       return pages[index];
                     }),
+              ),   Padding(
+                padding: const EdgeInsets.only(bottom :50),
+                child: Text(
+                  mood[activePage],
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
               ),
               Positioned(
                 bottom: 10,
@@ -111,6 +118,7 @@ class _corousalState extends State<corousal> {
                                   ),
                                 ),
                               ))),
+                              
                 ),
               )
             ],
@@ -124,7 +132,8 @@ class _corousalState extends State<corousal> {
                 onTap: () {
                   Navigator.of(context).pushReplacement(
                       MaterialPageRoute(builder: (_) => Home()));
-                }),
+                }
+                ),
           ),
         ],
       ),

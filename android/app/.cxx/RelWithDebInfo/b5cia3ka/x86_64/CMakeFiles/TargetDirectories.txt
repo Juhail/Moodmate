@@ -1,0 +1,2 @@
+/Users/amjadhome/Developer/Flutter Projects/Moodmate/android/app/.cxx/RelWithDebInfo/b5cia3ka/x86_64/CMakeFiles/edit_cache.dir
+/Users/amjadhome/Developer/Flutter Projects/Moodmate/android/app/.cxx/RelWithDebInfo/b5cia3ka/x86_64/CMakeFiles/rebuild_cache.dir

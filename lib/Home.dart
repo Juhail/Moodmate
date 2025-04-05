@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
+import 'package:moodmate/MIS.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -15,18 +17,19 @@ class _HomeState extends State<Home> {
     'Watch a movie',
     'Cook a meal',
   ];
+DateTime now = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(188, 212, 211, 211),
+      backgroundColor: Color.fromARGB(232, 247, 244, 242),
       body: SingleChildScrollView(
         child: Column(children: [
           ClipPath(
             clipper: GreenContainerClipper(),
             child: Container(
               width: MediaQuery.of(context).size.width,
-              height: 400,
+              height:350,
               decoration: BoxDecoration(color: Color(0xFFB6CD7D), boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.2),
@@ -35,15 +38,25 @@ class _HomeState extends State<Home> {
                   offset: Offset(0, 5), // changes position of shadow
                 ),
               ]),
-              child: SizedBox(
-                height: 20,
-                width: 20,
-                // child: SvgPicture.asset(
-                //   'assets/neutral.svg',
-                //   width: 20,
-                //   height: 20,
-                //   fit: BoxFit.cover,
-                // ),
+              child: Column(mainAxisAlignment: MainAxisAlignment.center,
+                children: [  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Text("You\'r Happy!",style :TextStyle(letterSpacing: 1.8,
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                    ),),
+                  ),
+                  Center(
+                    child: SvgPicture.asset(
+                      'assets/happyol.svg',
+                      width: 200,
+                      height: 200,
+                    //   fit: BoxFit.cover,
+                    ),
+                  ),
+                
+
+                ],
               ),
             ),
           ),
@@ -54,13 +67,80 @@ class _HomeState extends State<Home> {
                 flex: 1,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 20, 10, 20),
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: 250,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(30),
-                    ),
+                  child: Column(
+                    children: [ 
+                      // First Container
+                      GestureDetector(
+                        onDoubleTap: () {
+                                  Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (_) => MIS()));
+                                },
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(30),
+                        
+                          ),child: Padding(
+                            padding: const EdgeInsets.all(15),
+                            child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Center(
+                                  child: SvgPicture.asset( 'assets/heart.svg',
+                                    width: 18,
+                                    height: 18,
+                                  ),
+                                ),  Text(DateFormat('d EEE MMM').format(now).toUpperCase(), style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color(0xFF9BB068),
+                                ),),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),SizedBox(height: 15,),
+                      // Second Container
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 129,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(30),
+                      
+                        ),child: Padding(
+                          padding: const EdgeInsets.all(15),
+                          child: Column(mainAxisAlignment: MainAxisAlignment.start,
+                          children:  [
+                        
+ Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Center(
+                                child: SvgPicture.asset( 'assets/sadh.svg',
+                                  width: 20,
+                                  height: 20,
+                                ),
+                              ),  Text('Mood Streak', style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xFF9BB068),
+                              ),),
+                            ],
+                          ),SizedBox(height: 5,),
+                          Text('80', style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xFF9BB068),
+                              ),),Text('Healthy', style: TextStyle(
+                                fontSize: 15,
+                              //  fontWeight: FontWeight.bold,
+                                color: const Color(0xFF9BB068),
+                              ),),
+                          ],),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -70,10 +150,34 @@ class _HomeState extends State<Home> {
                   padding: const EdgeInsets.fromLTRB(10, 20, 20, 20),
                   child: Container(
                     width: MediaQuery.of(context).size.width,
-                    height: 250,
+                    height: 200,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(30),
+                    ),child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [Row
+                        (mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                          SvgPicture.asset('assets/heart.svg',
+                            width: 25,
+                            height: 25,
+                          ),Text('Freud Score',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF9BB068),
+                            ),),
+                        ],),
+                        Center(
+                          child: Image.asset( 'assets/chart.png',
+                            width: 140,
+                            height: 110,
+                          ),
+                        ),],
+                        
+                      ),
                     ),
                   ),
                 ),
@@ -90,7 +194,7 @@ class _HomeState extends State<Home> {
                 borderRadius: BorderRadius.circular(30),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.fromLTRB(20,20,10,20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -101,11 +205,15 @@ class _HomeState extends State<Home> {
                         color: Color.fromARGB(255, 230, 235, 218),
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: SvgPicture.network(
-                        'assets/walking.svg',
-                        width: 20,
-                        height: 20,
-                        fit: BoxFit.cover,
+                      child: SizedBox(height: 50,width: 50
+                      ,                        child: Center(
+                          child: SvgPicture.asset(
+                            'assets/Vector.svg',
+                            width: 30,
+                            height: 30,
+                           // fit: BoxFit.cover,
+                          ),
+                        ),
                       ),
                     ),
                     Padding(
@@ -127,19 +235,17 @@ class _HomeState extends State<Home> {
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.normal,
-                              color: Colors.black,
+                               color: Colors.black,
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                      width: 80,
-                      child: SvgPicture.network(
+                    ),SizedBox(width: 40,),
+                    Center(
+                      child: SvgPicture.asset(
                         'assets/Frame.svg',
-                        width: 20,
-                        height: 20,
+                        width: 70,
+                        height: 70,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -154,8 +260,49 @@ class _HomeState extends State<Home> {
               width: MediaQuery.of(context).size.width,
               height: 250,
               decoration: BoxDecoration(
-                color: Color.fromARGB(199, 219, 219, 219),
+                color: Color.fromARGB(205, 203, 202, 202),
                 borderRadius: BorderRadius.circular(30),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(30, 30, 30, 15),
+                child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Who ever try To pull you down is already below you,',textAlign: TextAlign.center,
+                      style: TextStyle(letterSpacing: 4,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w300,
+                        color: Colors.black,
+                      ),
+                    ),
+                     Text('                -Alexander',
+                     textAlign: TextAlign.right,
+                      style: TextStyle(letterSpacing: 4,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w300,
+                        color: Colors.black,
+                      ),
+                    ),
+                    Container(
+                      width: 400,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Color.fromARGB(205, 189, 188, 188),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Center(
+                        child: Text('read more..',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w200,
+                            color: Color.fromARGB(255, 0, 0, 0),
+                          ),
+                        ),
+                      ),
+                        
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

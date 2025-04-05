@@ -8,7 +8,10 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
   final showHome = prefs.getBool('showHome') ?? false;
-  runApp(MaterialApp(debugShowCheckedModeBanner: false, home: Home()
-      //Splash(showHome: showHome),
-      ));
+  runApp(MaterialApp(debugShowCheckedModeBanner: false,home: Splash(
+        showHome: showHome,
+  )));
+  // home: Home()
+  
+      
 }

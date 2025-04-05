@@ -35,6 +35,7 @@ class _onboardingState extends State<onboarding> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
           ),
+         
         ],
       ),
     );
@@ -48,7 +49,7 @@ class _onboardingState extends State<onboarding> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold(backgroundColor: Colors.white,
       body: Container(
         padding: EdgeInsets.only(bottom: 80),
         child: PageView(
@@ -59,58 +60,76 @@ class _onboardingState extends State<onboarding> {
           children: [
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: [ Center(
+                child: Image.asset(
+                  'assets/hi.png',
+                  height: 300,
+                  width: 300,
+                ),
+              ),SizedBox(height: 30,),
                 Text(
                   "Hi There!",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(
-                  height: 200,
-                  width: double.infinity,
-                  child: SvgPicture.asset(
-                    'asset/hi.svg',
-                    fit: BoxFit.cover,
-                  ),
-                )
+               
               ],
             ),
-            Column(
+            Column(mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   "Who AreYou ?",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold,letterSpacing: 3.5),
+                ),SizedBox(height: 20,),
+                Text(
+                  "tell me your sweetest \nnickname!",textAlign: TextAlign.center,
+                  //style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Enter your name',
-                  ),
-                ),
+              
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(30,130,30,30),
+                      child: TextField(
+                        decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15)),
+                            hintText: 'Your name',
+                            contentPadding: const EdgeInsets.all(20)),
+                      ),
+                    ),
               ],
             ),
-            Column(children: [
-              Text(
+            Column(mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+            
+              Image.asset(
+                  'assets/set.png',
+                  height: 300,
+                  width: 300,
+                ),  Text(
                 'We\'re all set!',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-              SvgPicture.asset(
-                'asset/set.svg',
-                height: 300,
-                width: 300,
-                fit: BoxFit.cover,
-              )
             ])
           ],
         ),
       ),
       bottomSheet: islastpage
-          ? TextButton(
-              onPressed: () async {
-                final prefs = await SharedPreferences.getInstance();
-                prefs.setBool('showHome', true);
-                Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => corousal()));
-              },
-              child: Text('Get Started'))
+          ? Container(color: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.all(50),
+              child: TextButton(style: TextButton.styleFrom(
+                  backgroundColor: Colors.black,),
+                  onPressed: () async {
+                    final prefs = await SharedPreferences.getInstance();
+                    prefs.setBool('showHome', true);
+                    Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (_) => corousal()));
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Text('Get Started',style: TextStyle(color: Colors.white),),
+                  )),
+            ),
+          )
           : Container(
               color: Colors.white,
               padding: EdgeInsets.symmetric(horizontal: 10),
