@@ -9,7 +9,8 @@ import 'package:flutter_svg/svg.dart';
      final List<Map<String, dynamic>> moodCards = [
   {
  
- 'color':Colors.white ,
+ 'color':
+             Color.fromARGB(205, 203, 202, 202),
  
  'child':
  
@@ -39,9 +40,9 @@ import 'package:flutter_svg/svg.dart';
            Padding(
              padding: const EdgeInsets.only(left: 20),
              child: Text(
-               'Listen to Your \nFavourite Music',
+               'Listen to Your Favourite\n Music',textAlign: TextAlign.center,
                style: TextStyle(
-                 fontSize: 19,
+                 fontSize: 17,
                  fontWeight: FontWeight.bold,
                  color: Colors.black,
                ),
@@ -57,7 +58,8 @@ import 'package:flutter_svg/svg.dart';
              
              height:43,
              decoration: BoxDecoration(
-          color: const Color(0xFF9BB068),                          borderRadius: BorderRadius.circular(30),
+          color: const Color(0xFF9BB068),    
+                                borderRadius: BorderRadius.circular(30),
            
              ),child: Center(child: Text('Spotify', style: TextStyle(
                  fontSize: 15,
@@ -69,6 +71,9 @@ import 'package:flutter_svg/svg.dart';
      ),
    ],
  ),},
+
+ // second card
+
  {
   'color':Colors.white ,
   'child': Column(
@@ -125,6 +130,16 @@ import 'package:flutter_svg/svg.dart';
              
        ),
      ),
+   ],)
+ }
+,
+//3rd  card
+
+ {
+  'color':Colors.white ,
+  'child': Column(mainAxisAlignment: MainAxisAlignment.center,
+   children: [
+     Text('Write a diary...',style: TextStyle(color: Colors.grey[600],fontWeight: FontWeight.bold),)
    ],)
  }
           ,

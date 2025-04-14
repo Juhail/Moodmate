@@ -2,8 +2,15 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter_svg/svg.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:moodmate/Home.dart';
 import 'package:moodmate/MIS.dart';
+
+
+final moodBox = Hive.box('moods');
+String? todayMood = moodBox.get(DateFormat('yyyy-MM-dd').format(DateTime.now()));
+
 
 class corousal extends StatefulWidget {
   @override
@@ -18,55 +25,34 @@ class _corousalState extends State<corousal> {
     "assets/slightly_smile.svg",
     "assets/big_smile.svg"
   ];
+
   final List<String> mood = ["awful", "bad", "Meh", "good", "rad"];
   late List<Widget> pages = List.generate(imagePaths.length,
       (index) => ImagePlaceHolder(imagePath: imagePaths[index]));
-  int activePage = 0;
-  final PageController pageController = PageController(initialPage: 0);
-  Timer? _timer;
 
-  void startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 3), (timer) {
-      if (pageController.page == imagePaths.length - 1) {
-        pageController.animateTo(0,
-            duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
-      } else {
-        pageController.nextPage(
-            duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-      }
-    });
-  }
+  int activePage = 0;
+  bool isButtonVisible = false;
+  final PageController pageController = PageController(initialPage: 0);
 
   @override
-  // void initState() {
-  //   super.initState();
-  //   pages = List.generate(imagePaths.length,
-  //       (index) => ImagePlaceHolder(imagePath: imagePaths[index]));
-  //   startTimer();
-  // }
-
-  // void dispose() {
-  //   super.dispose();
-  //   _timer?.cancel();
-  // }
-
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
+          // Top Text
           Padding(
             padding: const EdgeInsets.only(top: 90),
             child: Text("How Are You Feeling \n today?",
+                textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           ),
+
+          // Carousel Section
           Column(
             children: [
-              // Text(
-              //   mood[activePage],
-              //   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              // ),
+              // Image Carousel
               Container(
                 width: MediaQuery.of(context).size.width,
                 height: 400,
@@ -74,73 +60,92 @@ class _corousalState extends State<corousal> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(30)),
                 child: PageView.builder(
-                    controller: pageController,
-                    itemCount: imagePaths.length,
-                    onPageChanged: (value) {
-                      setState(() {
-                        activePage = value;
-                      });
-                    },
-                    itemBuilder: (context, index) {
-                      return pages[index];
-                    }),
-              ),   Padding(
-                padding: const EdgeInsets.only(bottom :50),
+                  controller: pageController,
+                  itemCount: imagePaths.length,
+                  onPageChanged: (value) {
+                    setState(() {
+                      activePage = value;
+                      isButtonVisible = true;
+                    });
+                  },
+                  itemBuilder: (context, index) {
+                    return pages[index];
+                  },
+                ),
+              ),
+
+              // Mood Text
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20),
                 child: Text(
                   mood[activePage],
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
-              Positioned(
-                bottom: 10,
-                left: 0,
-                right: 0,
-                child: Container(
-                  color: Colors.transparent,
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List<Widget>.generate(
-                          pages.length,
-                          (index) => Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 5),
-                                child: InkWell(
-                                  onTap: () {
-                                    pageController.animateToPage(index,
-                                        duration: Duration(milliseconds: 300),
-                                        curve: Curves.easeIn);
-                                  },
-                                  child: CircleAvatar(
-                                    radius: 4,
-                                    backgroundColor: activePage == index
-                                        ? Colors.yellow
-                                        : Colors.grey,
-                                  ),
-                                ),
-                              ))),
-                              
-                ),
-              )
+
+              // Dot Indicators
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(pages.length, (index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    child: InkWell(
+                      onTap: () {
+                        pageController.animateToPage(index,
+                            duration: Duration(milliseconds: 300),
+                            curve: Curves.easeIn);
+                      },
+                      child: CircleAvatar(
+                        radius: 4,
+                        backgroundColor: activePage == index
+                            ? Colors.yellow
+                            : Colors.grey,
+                      ),
+                    ),
+                  );
+                }),
+              ),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 40),
-            child: GestureDetector(
-                child: Text("Start",
-                    style:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                onTap: () {
-                  Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (_) => Home()));
-                }
-                ),
+
+          // Start Button (Animated)
+          AnimatedScale(
+            scale: isButtonVisible ? 1.0 : 0.0,
+            duration: Duration(milliseconds: 500),
+            curve: Curves.easeOutBack,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 40, top: 10),
+              child: TextButton(
+                onPressed: isButtonVisible
+                    ? () async {
+
+final moodBox = Hive.box('moods');
+        final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+        final selectedMood = mood[activePage]; // e.g., "bad", "rad"
+
+        // Save only if not already stored
+        if (!moodBox.containsKey(today)) {
+          await moodBox.put(today, selectedMood);
+        }
+String? todayMood = moodBox.get(DateFormat('yyyy-MM-dd').format(DateTime.now()));
+
+print('todays mood =$todayMood');
+                        Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(builder: (_) => Home()));
+                      }
+                    : null,
+                child: Text("Start",  style:
+                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold,color: Colors.black)),),
+               
+                
+              
+            ),
           ),
         ],
       ),
     );
   }
 }
-
 class ImagePlaceHolder extends StatelessWidget {
   final String? imagePath;
 
@@ -153,3 +158,4 @@ class ImagePlaceHolder extends StatelessWidget {
     );
   }
 }
+
