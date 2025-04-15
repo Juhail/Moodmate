@@ -1,11 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+
+
+
+
 class AnimatedWavyHeader extends StatefulWidget {
   final Widget child;
-
   const AnimatedWavyHeader({super.key, required this.child});
-
   @override
   _AnimatedWavyHeaderState createState() => _AnimatedWavyHeaderState();
 }
@@ -46,7 +46,6 @@ class _AnimatedWavyHeaderState extends State<AnimatedWavyHeader>
           child: ClipPath(
             clipper: GreenContainerClipper(),
             child: Container(
-            
               width: double.infinity,
               height: 350,
               child: widget.child,
@@ -57,9 +56,9 @@ class _AnimatedWavyHeaderState extends State<AnimatedWavyHeader>
     );
   }
 }
+
 class WavyPainter extends CustomPainter {
   final double offset;
-
   WavyPainter({required this.offset});
 
   @override
@@ -72,7 +71,7 @@ class WavyPainter extends CustomPainter {
     path.lineTo(0, size.height * 0.85);
 
     path.quadraticBezierTo(
-      size.width /2,
+      size.width / 2,
       size.height * 1.15 + offset,
       size.width,
       size.height * 0.85,
@@ -94,20 +93,18 @@ class GreenContainerClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     Path path = Path();
-    path.lineTo(0, size.height * 0.85); // Left curve start
+    path.lineTo(0, size.height * 0.85);
     path.quadraticBezierTo(
       size.width / 2,
       size.height * 1.15,
       size.width,
       size.height * 0.85,
-    ); // Bottom curve
+    );
     path.lineTo(size.width, 0);
     path.close();
     return path;
   }
 
   @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
-    return false;
-  }
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }

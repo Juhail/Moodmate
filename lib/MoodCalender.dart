@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:hive/hive.dart';
 
-class MoodImprovementCalendar extends StatefulWidget {
+class MoodCalendar extends StatefulWidget {
   @override
-  _MoodImprovementCalendarState createState() => _MoodImprovementCalendarState();
+  _MoodCalendarState createState() => _MoodCalendarState();
 }
 
-class _MoodImprovementCalendarState extends State<MoodImprovementCalendar> {
+class _MoodCalendarState extends State<MoodCalendar> {
   DateTime _focusedDate = DateTime.now();
   DateTime? _selectedDate;
   late Box moodBox;

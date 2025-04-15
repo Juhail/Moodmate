@@ -1,10 +1,12 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
 //import 'package:intl/intl.dart';
 import 'package:moodmate/MoodCalender.dart';
+import 'package:moodmate/animation.dart';
 import 'package:moodmate/homeanimation.dart';
+import 'package:moodmate/animation.dart' as animation;
 import 'package:moodmate/macrad.dart';
 import 'package:moodmate/todaysmood.dart';
 
@@ -12,7 +14,7 @@ class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
 }
-final int currentLevel = 5;
+late int currentLevel =0;
 class _HomeState extends State<Home> {
   List<String> activities = [
     'Go for a walk',
@@ -23,6 +25,31 @@ class _HomeState extends State<Home> {
 DateTime now = DateTime.now();
 final PageController pageController = PageController(viewportFraction: 0.95);
   int activePage = 0;
+
+@override
+void initState() {
+  super.initState();
+
+ DateTime now = DateTime.now();
+DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1)); // Monday
+final moodBox = Hive.box('moods');
+
+
+// Loop from Monday to today, stop streak if missing
+for (int i = 0; i <= now.difference(startOfWeek).inDays; i++) {
+  DateTime day = startOfWeek.add(Duration(days: i));
+  String dateKey = DateFormat('yyyy-MM-dd').format(day);
+
+  if (moodBox.containsKey(dateKey)) {
+    currentLevel++; // Streak continues
+  } else {
+    currentLevel = 0; // Break in streak, reset
+  }
+}
+
+}
+
+
 
 
 bool isActive = true;
@@ -53,14 +80,14 @@ bool isActive = true;
                     fontWeight: FontWeight.bold,
                   ),),
                 ),
-                Center(
-                  child: SvgPicture.asset(
-                    'assets/happyol.svg',
-                    width: 200,
-                    height: 200,
-                  //   fit: BoxFit.cover,
-                  ),
-                ),
+             SizedBox(child: animation.SmileyAnimation(),)              // Center(
+                //   child: Image.asset(
+                //     'assets/smiley.gif',
+                //     width: 300,
+                //     height: 250,
+                //   //   fit: BoxFit.cover,
+                //   ),
+                // ),
               
           
               ],
@@ -177,7 +204,7 @@ bool isActive = true;
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => MoodImprovementCalendar(),
+                        builder: (context) => MoodCalendar(),
                       ),
                     );
                   },
@@ -333,24 +360,26 @@ bool isActive = true;
                         color: Colors.black,
                       ),
                     ),
-                    Container(
-                      width: 400,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Color.fromARGB(205, 189, 188, 188),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Center(
-                        child: Text('read more..',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w200,
-                            color: Color.fromARGB(255, 0, 0, 0),
+                    GestureDetector(
+                      child: Container(
+                        width: 400,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(205, 189, 188, 188),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Center(
+                          child: Text('read more..',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w200,
+                              color: Color.fromARGB(255, 0, 0, 0),
+                            ),
                           ),
                         ),
+                          
                       ),
-                        
                     ),
                   ],
                 ),
