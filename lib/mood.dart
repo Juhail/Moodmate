@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 
 import 'package:flutter_svg/svg.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:moodmate/Home.dart';
-import 'package:moodmate/MIS.dart';
 
 
 final moodBox = Hive.box('moods');

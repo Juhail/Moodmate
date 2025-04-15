@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:intl/intl.dart';
+//import 'package:intl/intl.dart';
 import 'package:moodmate/MoodCalender.dart';
 import 'package:moodmate/homeanimation.dart';
 import 'package:moodmate/macrad.dart';
@@ -28,7 +28,7 @@ final PageController pageController = PageController(viewportFraction: 0.95);
 bool isActive = true;
   @override
   Widget build(BuildContext context) {
-    String date =DateFormat('d EEE MMM').format(now).toUpperCase();
+  //  String date =DateFormat('d EEE MMM').format(now).toUpperCase();
 
     
     return Scaffold(
