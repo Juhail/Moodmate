@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:hive/hive.dart';
+import 'package:moodmate/additionals/todaysmood.dart';
 
 class MoodCalendar extends StatefulWidget {
   @override
@@ -15,7 +17,24 @@ class _MoodCalendarState extends State<MoodCalendar> {
   @override
   void initState() {
     super.initState();
-    moodBox = Hive.box('moods'); // Make sure it's opened before calling this screen
+    moodBox = Hive.box('moods'); // Ensure it's opened in main.dart
+  }
+
+  // 🟩 Shared mood status fetcher for current month (to reuse in Home view)
+  static Future<List<bool>> getMoodStatusForCurrentMonth() async {
+    final moodBox = await Hive.openBox('moods');
+    final now = DateTime.now();
+    final daysInMonth = DateUtils.getDaysInMonth(now.year, now.month);
+
+    List<bool> status = [];
+
+    for (int i = 1; i <= daysInMonth; i++) {
+      final date = DateTime(now.year, now.month, i);
+      final key = DateFormat('yyyy-MM-dd').format(date);
+      status.add(moodBox.containsKey(key));
+    }
+
+    return status;
   }
 
   Color getMoodColor(String? mood) {
@@ -45,12 +64,12 @@ class _MoodCalendarState extends State<MoodCalendar> {
     final totalCells = startWeekday + daysInMonth;
 
     final dayTiles = List.generate(totalCells, (index) {
-      if (index < startWeekday) return Container(); // Empty start
+      if (index < startWeekday) return Container(); // Empty padding at start
 
       final day = index - startWeekday + 1;
       final thisDate = DateTime(_focusedDate.year, _focusedDate.month, day);
       final formattedDate = DateFormat('yyyy-MM-dd').format(thisDate);
-      final savedMood = moodBox.get(formattedDate); // 'awful', 'bad', etc
+      final savedMood = moodBox.get(formattedDate); // Check mood
 
       final isToday = DateTime.now().day == day &&
           DateTime.now().month == _focusedDate.month &&
@@ -92,7 +111,11 @@ class _MoodCalendarState extends State<MoodCalendar> {
     });
 
     return Scaffold(
-      appBar: AppBar(title: Text('Mood Calendar')),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text('Mood Calendar'),
+        backgroundColor: Colors.white,
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -110,7 +133,11 @@ class _MoodCalendarState extends State<MoodCalendar> {
                 ),
                 Text(
                   currentMonth,
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[800],
+                  ),
                 ),
                 IconButton(
                   icon: Icon(Icons.arrow_forward_ios),
@@ -147,8 +174,8 @@ class _MoodCalendarState extends State<MoodCalendar> {
               physics: NeverScrollableScrollPhysics(),
               children: dayTiles,
             ),
+            Divider(),
             SizedBox(height: 20),
-
             if (_selectedDate != null)
               Column(
                 children: [
@@ -160,6 +187,13 @@ class _MoodCalendarState extends State<MoodCalendar> {
                   Text(
                     moodBox.get(DateFormat('yyyy-MM-dd').format(_selectedDate!)) ?? "No mood saved",
                     style: TextStyle(fontSize: 20),
+                  ),
+                  Center(
+                    child: SvgPicture.asset(
+                      'assets/${getMoodpic(moodBox.get(DateFormat('yyyy-MM-dd').format(_selectedDate!)))}.svg',
+                      width: 200,
+                      height: 200,
+                    ),
                   ),
                 ],
               ),

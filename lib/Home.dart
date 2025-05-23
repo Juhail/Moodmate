@@ -2,19 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
-//import 'package:intl/intl.dart';
-import 'package:moodmate/MoodCalender.dart';
-import 'package:moodmate/animation.dart';
-import 'package:moodmate/homeanimation.dart';
-import 'package:moodmate/animation.dart' as animation;
-import 'package:moodmate/macrad.dart';
-import 'package:moodmate/todaysmood.dart';
+import 'package:moodmate/additionals/MoodCalender.dart';
+import 'package:moodmate/additionals/homeanimation.dart';
+import 'package:moodmate/additionals/animation.dart' as animation;
+import 'package:moodmate/additionals/macrad.dart';
+import 'package:moodmate/additionals/moodchallenge.dart';
+import 'package:moodmate/additionals/weeklymoodbar.dart';
+import 'package:moodmate/additionals/quotes.dart';
+import 'package:moodmate/additionals/todaysmood.dart';
+import 'package:provider/provider.dart';
+
 
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
 }
-late int currentLevel =0;
+ int currentLevel =0;
 class _HomeState extends State<Home> {
   List<String> activities = [
     'Go for a walk',
@@ -26,72 +29,46 @@ DateTime now = DateTime.now();
 final PageController pageController = PageController(viewportFraction: 0.95);
   int activePage = 0;
 
+  Future<List<bool>> getMoodStatusForCurrentMonth() async {
+    final moodBox = Hive.box('moods');
+    DateTime now = DateTime.now();
+    int daysInMonth = DateTime(now.year, now.month + 1, 0).day;
+    List<bool> moodStatus = List.generate(daysInMonth, (index) {
+      DateTime day = DateTime(now.year, now.month, index + 1);
+      String dateKey = DateFormat('yyyy-MM-dd').format(day);
+      return moodBox.containsKey(dateKey);
+    });
+    // If less than 31 days, pad with false
+    if (moodStatus.length < 31) {
+      moodStatus.addAll(List.filled(31 - moodStatus.length, false));
+    }
+    return moodStatus;
+  }
+
 @override
 void initState() {
   super.initState();
-
- DateTime now = DateTime.now();
-DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1)); // Monday
-final moodBox = Hive.box('moods');
-
-
-// Loop from Monday to today, stop streak if missing
-for (int i = 0; i <= now.difference(startOfWeek).inDays; i++) {
-  DateTime day = startOfWeek.add(Duration(days: i));
-  String dateKey = DateFormat('yyyy-MM-dd').format(day);
-
-  if (moodBox.containsKey(dateKey)) {
-    currentLevel++; // Streak continues
-  } else {
-    currentLevel = 0; // Break in streak, reset
   }
-}
-
-}
-
-
-
-
 bool isActive = true;
   @override
   Widget build(BuildContext context) {
   //  String date =DateFormat('d EEE MMM').format(now).toUpperCase();
-
-    
     return Scaffold(
       backgroundColor: Color.fromARGB(232, 247, 244, 242),
       body: SingleChildScrollView(
         child: 
         isActive?
-        //
-        //
-        //
-        Column(children: [
-     
-          AnimatedWavyHeader(
-            // width: MediaQuery.of(context).size.width,
-            // height:350,
-           
+        
+        Column(children: [AnimatedWavyHeader(
             child: Column(mainAxisAlignment: MainAxisAlignment.center,
               children: [  Padding(
                   padding: const EdgeInsets.all(20),
-                  child: Text("You\'r $todayMood!",style :TextStyle(letterSpacing: 1.8,
+                  child: Text("You Feel $todayMood!",style :TextStyle(letterSpacing: 1.8,
                     fontSize: 17,
                     fontWeight: FontWeight.bold,
                   ),),
                 ),
-             SizedBox(child: animation.SmileyAnimation(),)              // Center(
-                //   child: Image.asset(
-                //     'assets/smiley.gif',
-                //     width: 300,
-                //     height: 250,
-                //   //   fit: BoxFit.cover,
-                //   ),
-                // ),
-              
-          
-              ],
-            ),
+             SizedBox(child: animation.SmileyAnimation(),)            ], ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -107,26 +84,20 @@ bool isActive = true;
                         onTap: () { setState(() {
     isActive = !isActive;
     print(isActive);
-  });
-                                },
+  });},
                         child: Container(
                           width: MediaQuery.of(context).size.width,
                           height: 56,
                           decoration: BoxDecoration(
-                            color: const Color(0xFF9BB068),
+                            color: MoodColor,
                             borderRadius: BorderRadius.circular(30),
                         
                           ),child: Padding(
                             padding: const EdgeInsets.all(15),
                             child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                // Center(
-                                //   child: SvgPicture.asset( 'assets/heart.svg',
-                                //     width: 18,
-                                //     height: 18,
-                                //   ),
-                                // ),  
-                                Text(isActive? 'Mood Change': 'Go Back', style: TextStyle(
+                              
+                                Text(isActive? 'MIS': 'Feel Better?', style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w500,
                                   color:  Colors.white,
@@ -136,23 +107,7 @@ bool isActive = true;
                           ),
                         ),
                       ),
-                      //
-                      //
-                      //
-                      //
-                      //
-                    
-//
-//
-
-
-
-
-                      //
-                      //
-                      //
-                      //
-                      SizedBox(height: 15,),
+                   const   SizedBox(height: 15,),
                       // Second Container
                       Container(
                         width: MediaQuery.of(context).size.width,
@@ -162,33 +117,54 @@ bool isActive = true;
                           borderRadius: BorderRadius.circular(30),
                       
                         ),child: Padding(
-                          padding: const EdgeInsets.all(15),
-                          child: Column(mainAxisAlignment: MainAxisAlignment.start,
+                          padding: const EdgeInsets.fromLTRB(10,10,10,0),
+                          child: Column(
                           children:  [
-                        
- Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Center(
-                                child: SvgPicture.asset( 'assets/sadh.svg',
-                                  width: 20,
-                                  height: 20,
+                            Row(mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: Container(
+                                                              
+                                    width: 65,
+                                    height: 65,
+                                    decoration: BoxDecoration(
+                                      color: Color.fromARGB(255, 230, 235, 218),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Center(
+                                        child: SvgPicture.asset(
+                                          'assets/${getMoodpic(todayMood)}.svg',
+                                          width: 50,
+                                          height: 50,
+                                         // fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                  ),
                                 ),
-                              ),  Text('Freud Score', style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: const Color(0xFF9BB068),
-                              ),),
-                            ],
-                          ),SizedBox(height: 5,),
-                          Text('80', style: TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold,
-                                color: const Color(0xFF9BB068),
-                              ),),Text('Healthy', style: TextStyle(
-                                fontSize: 15,
-                              //  fontWeight: FontWeight.bold,
-                                color: const Color(0xFF9BB068),
-                              ),),
+                                SizedBox(width: 10,)
+,                                Expanded(flex:1,
+  child: Column(
+                                    children: [
+                                      Text('Freud score',style:TextStyle(color:MoodColor,fontSize: 12,),),
+                                      Text('80',style: TextStyle(fontWeight: FontWeight.bold,color: MoodColor,fontSize: 30),)
+                                    ],
+                                  ),
+)
+                              ],
+                            ),
+                            Spacer(),
+                        Container(
+                          width: 180,
+                          height: 35,
+                          decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 230, 235, 218),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Center(child: Text('Happy',style: TextStyle(fontWeight: FontWeight.bold,color: MoodColor),))
+                        ),
+                            SizedBox(height: 10,),
+
                           ],),
                         ),
                       ),
@@ -196,197 +172,100 @@ bool isActive = true;
                   ),
                 ),
               ),
-              Expanded(
-                flex: 1,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 20, 20, 20),
-                  child: GestureDetector(onLongPress: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MoodCalendar(),
-                      ),
-                    );
-                  },
-                   
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: 200,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(30),
-                      ),child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [Row
-                          (mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                            SvgPicture.asset('assets/heart.svg',
-                              width: 20,
-                              height: 20,
-                            ),Text('Freud Score',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: const Color(0xFF9BB068),
-                              ),),
-                          ],),
-                          Center(
-                            child: Image.asset( 'assets/chart.png',
-                              width: 140,
-                              height: 110,
-                            ),
-                          ),],
-                          
+Expanded(
+  flex: 1,
+  child: Padding(
+    padding: const EdgeInsets.fromLTRB(10, 20, 20, 20),
+    child: GestureDetector(
+      onLongPress: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MoodCalendar(),
+          ),
+        );
+      },
+      child: FutureBuilder<List<bool>>(
+        future: getMoodStatusForCurrentMonth(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text("No data available"));
+          }
+
+          final moodStatuses = snapshot.data!;
+          return Container(
+            width: MediaQuery.of(context).size.width,
+            height: 200,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(15),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Center(
+                        child: SvgPicture.asset(
+                          'assets/sadh.svg',
+                          width: 20,
+                          height: 20,
                         ),
                       ),
-                    ),
+                      Text(
+                        'Calendar',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: MoodColor,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
+                  GridView.count(
+                    crossAxisCount: 7,
+                    mainAxisSpacing: 4,
+                    shrinkWrap: true,
+                    crossAxisSpacing: 4,
+                    physics: NeverScrollableScrollPhysics(),
+                    padding: EdgeInsets.zero,
+                    children: List.generate(31, (index) {
+                      bool isFilled = moodStatuses[index];
+                      return Container(
+                        width: 12,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: isFilled ? MoodColor : const Color.fromARGB(255, 210, 220, 187),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                      );
+                    }),
+                  ),
+                ],
               ),
-            ],
+            ),
+          );
+        },
+      ),
+    ),
+  ),
+) ],
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(15,0,15,0),
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              height: 100,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20,20,10,20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 60,
-                      height: 70,
-                      decoration: BoxDecoration(
-                        color: Color.fromARGB(255, 230, 235, 218),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: SizedBox(height: 50,width: 50
-                      ,                        child: Center(
-                          child: SvgPicture.asset(
-                            'assets/Vector.svg',
-                            width: 30,
-                            height: 30,
-                           // fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Text(
-                            'Mood Streak',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                        Row(
-                          children: List<Widget>.generate(7, (index) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                              child: Container(
-                                width: 30,
-                                height: 7,
-                                decoration: BoxDecoration(
-                                  color: index < currentLevel ?
-                               const Color(0xFF9BB068)
-                                  : 
-                                  Colors.grey,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                              ),
-                            );
-                          }),
-                        ),
-                        Text('Apr: 20 / 31',style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w300,
-                          color: Colors.black,
-                        ),),
-                        ],
-                      ),
-                    ),
-                    //SizedBox(width: 40,),
-                    // Center(
-                    //   child: SvgPicture.asset(
-                    //     'assets/Frame.svg',
-                    //     width: 50,
-                    //     height: 50,
-                    //     fit: BoxFit.cover,
-                    //   ),
-                    // ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              height: 250,
-              decoration: BoxDecoration(
-                color: Color.fromARGB(205, 203, 202, 202),
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(30, 30, 30, 15),
-                child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Who ever try To pull you down is already below you,',textAlign: TextAlign.center,
-                      style: TextStyle(letterSpacing: 4,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w300,
-                        color: Colors.black,
-                      ),
-                    ),
-                     Text('                -Alexander',
-                     textAlign: TextAlign.right,
-                      style: TextStyle(letterSpacing: 4,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w300,
-                        color: Colors.black,
-                      ),
-                    ),
-                    GestureDetector(
-                      child: Container(
-                        width: 400,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: Color.fromARGB(205, 189, 188, 188),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Center(
-                          child: Text('read more..',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w200,
-                              color: Color.fromARGB(255, 0, 0, 0),
-                            ),
-                          ),
-                        ),
-                          
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-       
+            child:WeeklyMoodBar()
+            ),   
+ChangeNotifierProvider(
+  create: (_) => QuoteLogic(),
+  child: HomeQuoteCard(),
+),
        //
        //
        //
@@ -403,24 +282,23 @@ bool isActive = true;
           child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Padding(
-            padding: const EdgeInsets.all(20),
-            child: Text(
-              "You\'r Happy!",
-              style: TextStyle(
-              letterSpacing: 1.8,
-              fontSize: 17,
-              fontWeight: FontWeight.bold,
-              ),
+        
+          AnimatedWavyHeader(
+            // width: MediaQuery.of(context).size.width,
+            // height:350,
+           
+            child: Column(mainAxisAlignment: MainAxisAlignment.center,
+              children: [  Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Text("You Feel $todayMood!",style :TextStyle(letterSpacing: 1.8,
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                  ),),
+                ),
+             SizedBox(child: animation.SmileyAnimation(),)                
+              ],
             ),
-            ),
-            Center(
-            child: SvgPicture.asset(
-              'assets/happyol.svg',
-              width: 200,
-              height: 200,
-            ),
-            ),
+          ),
           ],
           ),
         ),
@@ -437,34 +315,34 @@ bool isActive = true;
               children: [
                 Expanded(
                 flex: 1,
-                child: Container(
-                  height: 56,
-                  decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                    GestureDetector(
-                       onTap: () { setState(() {
+                child: GestureDetector(
+                         onTap: () { setState(() {
     isActive = !isActive;
     print(isActive);
   });
                                 },
-                      child: Text(
-                     'Go back',
+                  child: Container(
+                    height: 56,
+                    decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                      Text(
+                                           'Feel Better?',
                         style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
                         color: const Color(0xFF9BB068),
                         ),
                       ),
+                      ],
                     ),
-                    ],
-                  ),
+                    ),
                   ),
                 ),
                 ),
@@ -486,12 +364,15 @@ bool isActive = true;
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                    Text(
-                      'Breath',
-                      style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white
+                    GestureDetector(
+                      onTap: () {},
+                      child: Text(
+                        'Breath',
+                        style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white
+                        ),
                       ),
                     ),
                     ],
@@ -502,110 +383,15 @@ bool isActive = true;
               ],
               ),
               SizedBox(height: 15),
-              Container(
-              width: MediaQuery.of(context).size.width,
-              height: 170,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0,10,0,5),
-                    child: Text(
-                    '1 of 5',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      color: const Color(0xFF9BB068),
-                    ),
-                    ),
-                  ),
-                  ],
-                ),
-                SizedBox(height: 5),
-                Text(
-                  'Smile To 3 People \n You see',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFF9BB068),
-                  ),
-                ),
-                Spacer(),
-                Divider(indent: 5,
-                endIndent: 5,
-                  thickness: 2,
-                  height: 1,
-               color: Color.fromARGB(255, 230, 235, 218),
-                ),
-                Container(
-                  height: 60,
-                  decoration: BoxDecoration(
-                                          color: Colors.white,
+    
 
-                  borderRadius: BorderRadius.vertical(
-                    bottom: Radius.circular(30),
-                  ),
-                  ),
-                  child: Row(
-                  children: [
-                    Expanded(
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: Text(
-                      "Swap",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                                          color: const Color(0xFF9BB068),
-
-                        fontWeight: FontWeight.w700,
-                        fontSize: 20,
-                      ),
-                      ),
-                    ),
-                    ),
-                    VerticalDivider(
-                      endIndent: 3,
-                  thickness: 2,
-                    width: 1,
-               color: Color.fromARGB(255, 230, 235, 218),
-                    ),
-                    Expanded(
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: Text(
-                      "Accept",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                  color: const Color(0xFF9BB068),
-                        fontWeight: FontWeight.w700,
-                        fontSize: 20,
-                      ),
-                      ),
-                    ),
-                    ),
-                  ],
-                  ),
-                ),
-                ],
-              ),
-              ),
+              
             ],
             ),
           ),
           ),
         ],
         ),
-        //
-// Mood Cards
-        //
         SizedBox(
         height: 160,
         child: Stack(
@@ -645,6 +431,7 @@ bool isActive = true;
         ),
         ), 
                 SizedBox(height: 15,),
+
 Padding(
   padding: const EdgeInsets.only(bottom: 20),
   child: Row(
@@ -672,6 +459,13 @@ Padding(
     ),
   ),
 ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: ChangeNotifierProvider(
+              create: (_) => MoodChallengeLogic(),
+              child: MoodChallengeCard(),
+            ),
+          ),
 
       ]),
       ),

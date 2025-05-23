@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moodmate/additionals/todaysmood.dart';
 
 
 
@@ -64,8 +65,9 @@ class WavyPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final Paint paint = Paint()
-      ..color = Color(0xFFB6CD7D)
-      ..style = PaintingStyle.fill;
+      ..color = 
+MoodColor
+     ..style = PaintingStyle.fill;
 
     final Path path = Path();
     path.lineTo(0, size.height * 0.85);

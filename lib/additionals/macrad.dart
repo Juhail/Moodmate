@@ -3,7 +3,7 @@
  import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
- 
+ import 'package:url_launcher/url_launcher.dart';
  
  
      final List<Map<String, dynamic>> moodCards = [
@@ -53,20 +53,25 @@ import 'package:flutter_svg/svg.dart';
        ),
      ),Padding(
        padding: const EdgeInsets.all(15),
-       child: Container(  
-           width: double.infinity,
+       child: GestureDetector(onTap: ()async {
+       final Uri url =  Uri.parse('https://open.spotify.com/');
+        await launchUrl(url,mode: LaunchMode.inAppWebView);
+       },
+         child: Container(  
+             width: double.infinity,
+               
+               height:43,
+               decoration: BoxDecoration(
+            color: const Color(0xFF9BB068),    
+                                  borderRadius: BorderRadius.circular(30),
              
-             height:43,
-             decoration: BoxDecoration(
-          color: const Color(0xFF9BB068),    
-                                borderRadius: BorderRadius.circular(30),
-           
-             ),child: Center(child: Text('Spotify', style: TextStyle(
-                 fontSize: 15,
-                 fontWeight: FontWeight.w600,
-                 color: Colors.black,
-               ),)),
-             
+               ),child: Center(child: Text('Spotify', style: TextStyle(
+                   fontSize: 15,
+                   fontWeight: FontWeight.w600,
+                   color: Colors.black,
+                 ),)),
+               
+         ),
        ),
      ),
    ],
@@ -115,19 +120,23 @@ import 'package:flutter_svg/svg.dart';
        ),
      ),Padding(
        padding: const EdgeInsets.all(15),
-       child: Container(  
-           width: double.infinity,
+       child: GestureDetector(onTap: () {
+         
+       },
+         child: Container(  
+             width: double.infinity,
+               
+               height:43,
+               decoration: BoxDecoration(
+            color: const Color(0xFF9BB068),                          borderRadius: BorderRadius.circular(30),
              
-             height:43,
-             decoration: BoxDecoration(
-          color: const Color(0xFF9BB068),                          borderRadius: BorderRadius.circular(30),
-           
-             ),child: Center(child: Text('Spotify', style: TextStyle(
-                 fontSize: 15,
-                 fontWeight: FontWeight.w600,
-                 color: Colors.black,
-               ),)),
-             
+               ),child: Center(child: Text('Spotify', style: TextStyle(
+                   fontSize: 15,
+                   fontWeight: FontWeight.w600,
+                   color: Colors.black,
+                 ),)),
+               
+         ),
        ),
      ),
    ],)
